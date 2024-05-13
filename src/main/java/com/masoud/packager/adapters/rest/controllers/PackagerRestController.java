@@ -4,6 +4,7 @@ import com.masoud.packager.adapters.rest.dto.ErrorResponseDto;
 import com.masoud.packager.adapters.rest.dto.FillPackageInputDto;
 import com.masoud.packager.application.interfaces.PackagerService;
 import com.masoud.packager.adapters.rest.dto.FillPackageOutputDto;
+import com.masoud.packager.domain.exceptions.InvalidDataLimitException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @RestController
 @RequestMapping(path = "api/v1/packager")
@@ -30,7 +33,6 @@ class PackagerRestController {
         this.packagerService = packagerService;
     }
 
-    @PostMapping()
     @Operation(summary = "Fill a package with items based on given constraints",
             description = "This endpoint processes a list of items and the maximum package weight, returning the list of " +
                     "item IDs that can optimally fit within the given weight limit.")
@@ -40,9 +42,22 @@ class PackagerRestController {
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    FillPackageOutputDto fillPackage(@Valid @RequestBody FillPackageInputDto inputDto) {
+    @PostMapping()
+    public FillPackageOutputDto fillPackage(@Valid @RequestBody FillPackageInputDto inputDto) {
         logger.info("[Endpoint] post -> /api/v1/packager/fillPackage was called");
-        List<Integer> result = this.packagerService.fillPackage(inputDto.maxPackageWeight, inputDto.items);
-        return new FillPackageOutputDto(result);
+        CompletableFuture<List<Integer>> futureResult = CompletableFuture.supplyAsync(() ->
+            packagerService.fillPackage(inputDto.maxPackageWeight, inputDto.items)
+        );
+        try {
+            List<Integer> result = futureResult.join();
+            return new FillPackageOutputDto(result);
+        }
+        catch (CompletionException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof InvalidDataLimitException) {
+                throw (InvalidDataLimitException) cause;
+            }
+            throw ex;
+        }
     }
 }
