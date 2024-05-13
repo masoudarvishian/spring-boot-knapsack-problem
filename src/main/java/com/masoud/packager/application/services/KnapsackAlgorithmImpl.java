@@ -29,10 +29,10 @@ class KnapsackAlgorithmImpl implements KnapsackAlgorithm {
             for (int j = 0; j < n; j++) {
                 if ((bitmask & (1 << j)) != 0) {
                     Item currentItem = items.get(j);
-                    accumulatedWeight += currentItem.weight();
+                    accumulatedWeight += currentItem.getWeight();
                     if (accumulatedWeight > maxWeight) break;
-                    accumulatedPrice += currentItem.price();
-                    currentCombination.add(currentItem.id());
+                    accumulatedPrice += currentItem.getPrice();
+                    currentCombination.add(currentItem.getId());
                 }
             }
 
@@ -67,10 +67,10 @@ class KnapsackAlgorithmImpl implements KnapsackAlgorithm {
         float totalWeight = 0;
         for (Integer itemId : combination) {
             totalWeight += items.stream()
-                    .filter(item -> item.id() == itemId)
+                    .filter(item -> item.getId() == itemId)
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Invalid item ID"))
-                    .weight();
+                    .getWeight();
         }
         return totalWeight;
     }

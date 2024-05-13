@@ -32,14 +32,14 @@ public class PackagerRestControllerTests {
     @Test
     public void shouldReturnOkResultWithExpectedValues() throws Exception {
         FillPackageInputDto inputDto = new FillPackageInputDto();
-        inputDto.maxPackageWeight = 70;
-        inputDto.items = List.of(
+        inputDto.setMaxPackageWeight(70);
+        inputDto.setItems(List.of(
                 new Item(1, 20.1f, 60),
                 new Item(2, 30.0f, 70),
                 new Item(3, 40.0f, 80),
                 new Item(4, 50.0f, 90),
                 new Item(5, 60.0f, 100)
-        );
+        ));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(url)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -52,17 +52,17 @@ public class PackagerRestControllerTests {
 
         List<Integer> expectedResult = List.of(2, 3);
 
-        Assertions.assertIterableEquals(expectedResult, outputDto.result());
+        Assertions.assertIterableEquals(expectedResult, outputDto.getResult());
     }
 
     @Test
     public void shouldReturnBadRequestResultWithExpectedValues() throws Exception {
         FillPackageInputDto inputDto = new FillPackageInputDto();
-        inputDto.maxPackageWeight = 0;
-        inputDto.items = List.of(
+        inputDto.setMaxPackageWeight(0);
+        inputDto.setItems(List.of(
                 new Item(1, 20.1f, 60),
                 new Item(2, 30.0f, 70)
-        );
+        ));
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(url)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ public class PackagerRestControllerTests {
 
         ErrorResponseDto outputDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponseDto.class);
 
-        Assertions.assertEquals(400, outputDto.statusCode());
-        Assertions.assertEquals("Package weight is less than or equal to zero", outputDto.message());
+        Assertions.assertEquals(400, outputDto.getStatusCode());
+        Assertions.assertEquals("Package weight is less than or equal to zero", outputDto.getMessage());
     }
 }

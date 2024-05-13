@@ -1,3 +1,11 @@
 package com.masoud.packager.adapters.rest.dto;
 
-public record ErrorResponseDto(int statusCode, String message) { }
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+@Data
+@RequiredArgsConstructor
+public class ErrorResponseDto {
+    private final int statusCode;
+    private final String message;
+}

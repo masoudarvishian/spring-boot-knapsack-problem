@@ -46,7 +46,7 @@ class PackagerRestController {
     public FillPackageOutputDto fillPackage(@Valid @RequestBody FillPackageInputDto inputDto) {
         logger.info("[Endpoint] post -> /api/v1/packager/fillPackage was called");
         CompletableFuture<List<Integer>> futureResult = CompletableFuture.supplyAsync(() ->
-            packagerService.fillPackage(inputDto.maxPackageWeight, inputDto.items)
+            packagerService.fillPackage(inputDto.getMaxPackageWeight(), inputDto.getItems())
         );
         try {
             List<Integer> result = futureResult.join();

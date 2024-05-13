@@ -33,10 +33,10 @@ class PackagerValidatorImpl implements PackagerValidator {
 
     private void validateItemProperties(List<Item> items) throws InvalidDataLimitException {
         for (Item item : items) {
-            if (item.id() <= 0 || item.weight() <= 0 || item.price() <= 0)
+            if (item.getId() <= 0 || item.getWeight() <= 0 || item.getPrice() <= 0)
                 throw new InvalidDataLimitException("Item Id, weight or price is less than or equal to zero");
 
-            if (item.weight() > packageLimits.getMaxItemWeightLimit() || item.price() > packageLimits.getMaxItemPriceLimit())
+            if (item.getWeight() > packageLimits.getMaxItemWeightLimit() || item.getPrice() > packageLimits.getMaxItemPriceLimit())
                 throw new InvalidDataLimitException("Item weight or price exceeds maximum limit");
         }
     }
@@ -56,8 +56,8 @@ class PackagerValidatorImpl implements PackagerValidator {
     private void ensureUniqueItemIds(List<Item> items) throws DuplicateIdException {
         Set<Integer> ids = new HashSet<>();
         for (Item item : items) {
-            if (!ids.add(item.id()))
-                throw new DuplicateIdException("Duplicate item ID found: " + item.id());
+            if (!ids.add(item.getId()))
+                throw new DuplicateIdException("Duplicate item ID found: " + item.getId());
         }
     }
 }
